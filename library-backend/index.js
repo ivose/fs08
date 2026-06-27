@@ -126,6 +126,10 @@ const typeDefs = `
       published: Int!
       genres: [String!]!
     ): Book!
+    editAuthor(
+      name: String!
+      setBornTo: Int!
+    ): Author
   }
 `
 
@@ -147,6 +151,15 @@ const resolvers = {
       const book = { ...args, id: randomUUID() }
       books = books.concat(book)
       return book
+    },
+    editAuthor: (root, args) => {
+      const author = authors.find((item) => item.name === args.name)
+      if (!author) {
+        return null
+      }
+      const uAuthor = { ...author, born: args.setBornTo }
+      authors = authors.map((item) => item.name === args.name ? uAuthor : item)
+      return uAuthor
     },
   },
   Author: {
