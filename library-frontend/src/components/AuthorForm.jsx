@@ -20,6 +20,11 @@ const AuthorForm = (props) => {
     }
   }, [authors, name])
 
+  useEffect(() => {
+    const selectedAuthor = authors.find((author) => author.name === name)
+    setBorn(selectedAuthor?.born?.toString() ?? '')
+  }, [authors, name])
+
   if (!props.show) {
     return null
   }
@@ -41,8 +46,6 @@ const AuthorForm = (props) => {
         setBornTo: Number(born),
       },
     })
-
-    setBorn('')
   }
   return (
     <div>
