@@ -1,3 +1,4 @@
+const { GraphQLError } = require('graphql')
 const Author = require('./models/Author')
 const Book = require('./models/Book')
 
@@ -29,24 +30,55 @@ const resolvers = {
       let author = await Author.findOne({ name: args.author })
 
       if (!author) {
-        author = await new Author({ name: args.author }).save()
+        try {
+          author = await new Author({ name: args.author }).save()
+        } catch (error) {
+          throw new GraphQLError(`Saving author failed: ${error.message}`, {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.author,
+              error,
+            },
+          })
+        }
       }
 
-      const book = await new Book({
-        title: args.title,
-        published: args.published,
-        genres: args.genres,
-        author: author._id,
-      }).save()
+      let book
+      try {
+        book = await new Book({
+          title: args.title,
+          published: args.published,
+          genres: args.genres,
+          author: author._id,
+        }).save()
+      } catch (error) {
+        throw new GraphQLError(`Saving book failed: ${error.message}`, {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.title,
+            error,
+          },
+        })
+      }
 
       return book.populate('author')
     },
     editAuthor: async (root, args) => {
-      return Author.findOneAndUpdate(
-        { name: args.name },
-        { born: args.setBornTo },
-        { new: true },
-      )
+      try {
+        return await Author.findOneAndUpdate(
+          { name: args.name },
+          { born: args.setBornTo },
+          { new: true, runValidators: true },
+        )
+      } catch (error) {
+        throw new GraphQLError(`Updating author failed: ${error.message}`, {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.setBornTo,
+            error,
+          },
+        })
+      }
     },
   },
   Author: {
