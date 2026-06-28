@@ -9,8 +9,8 @@ const typeDefs = /* GraphQL */ `
     title: String!
     published: Int!
     author: Author!
-    author: String!
     genres: [String!]!
+    id: ID!
   }
 
   type Query {
