@@ -1,17 +1,18 @@
-const { ApolloServer } = require("@apollo/server")
-const { startStandaloneServer } = require("@apollo/server/standalone")
-const { randomUUID } = require("node:crypto")
-const typeDefs = require("./schema")
-const resolvers = require("./resolvers")
+require('node:dns').setServers(['1.1.1.1', '8.8.8.8'])
+require('dotenv').config()
 
+const connectToDatabase = require('./db')
+const startServer = require('./server')
 
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-})
+const MONGODB_URI = process.env.MONGODB_URI
+const PORT = Number(process.env.PORT) || 4000
 
-startStandaloneServer(server, {
-  listen: { port: 4000 },
-}).then(({ url }) => {
-  console.log(`Server ready at ${url}`)
+const main = async () => {
+  await connectToDatabase(MONGODB_URI)
+  await startServer(PORT)
+}
+
+main().catch((error) => {
+  console.error('Fatal error:', error)
+  process.exit(1)
 })
