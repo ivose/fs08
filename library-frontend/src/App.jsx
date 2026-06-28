@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
+import AuthorForm from './components/AuthorForm'
 
 const App = () => {
   const [page, setPage] = useState('authors')
@@ -19,6 +20,9 @@ const App = () => {
       <Books show={page === 'books'} />
 
       <NewBook show={page === 'add'} />
+
+      <br/>
+      <AuthorForm show={page === 'authors'} />
     </div>
   )
 }
