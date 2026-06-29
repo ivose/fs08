@@ -15,6 +15,7 @@ const Books = (props) => {
 
   const filteredResult = useQuery(ALL_BOOKS, {
     variables: { genre: activeGenre },
+    fetchPolicy: 'cache-and-network',
     skip: props.recommend && !recommendGenre,
   })
   const allBooksResult = useQuery(ALL_BOOKS)
