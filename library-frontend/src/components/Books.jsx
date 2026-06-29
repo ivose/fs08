@@ -8,22 +8,28 @@ const Books = (props) => {
   }
 
   const [selectedGenre, setSelectedGenre] = useState('all')
-  const result = useQuery(ALL_BOOKS)
+  const recommendGenre = props.favoriteGenre
+  const activeGenre = props.recommend
+    ? recommendGenre
+    : (selectedGenre === 'all' ? null : selectedGenre)
 
-  if (result.loading) {
+  const filteredResult = useQuery(ALL_BOOKS, {
+    variables: { genre: activeGenre },
+    skip: props.recommend && !recommendGenre,
+  })
+  const allBooksResult = useQuery(ALL_BOOKS)
+
+  if (filteredResult.loading || allBooksResult.loading) {
     return <div>loading...</div>
   }
 
-  const books = result.data.allBooks
-  const genres = [...new Set(books.flatMap((book) => book.genres))]
-  const recommendGenre = props.favoriteGenre
-  const filteredBooks = 
-    props.recommend
-    ? books.filter((book) => book.genres.includes(recommendGenre))
-    :
-    (selectedGenre === 'all'
-    ? books
-    : books.filter((book) => book.genres.includes(selectedGenre)))
+  if (props.recommend && !recommendGenre) {
+    return <div>no favorite genre set</div>
+  }
+
+  const books = filteredResult.data.allBooks
+  const allBooks = allBooksResult.data.allBooks
+  const genres = [...new Set(allBooks.flatMap((book) => book.genres))]
 
   return (
     <div>
@@ -37,7 +43,7 @@ const Books = (props) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {filteredBooks.map((a) => (
+          {books.map((a) => (
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>

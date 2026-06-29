@@ -58,8 +58,6 @@ const App = () => {
       </div>
 
       <Authors show={page === 'authors'} />
-
-{/* TODO how can i get logged in user recommended??? */}
       <Books
         show={page === 'books' || page === 'recommend'}
         recommend={page === 'recommend'}
