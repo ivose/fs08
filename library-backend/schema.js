@@ -53,6 +53,8 @@ const typeDefs = /* GraphQL */ `
       username: String!
       password: String!
     ): Token
+
+    _resetDatabase: Boolean
   }
 `
 
