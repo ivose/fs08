@@ -16,14 +16,19 @@ const Books = (props) => {
 
   const books = result.data.allBooks
   const genres = [...new Set(books.flatMap((book) => book.genres))]
-  const filteredBooks = selectedGenre === 'all'
+  const recommendGenre = props.favoriteGenre
+  const filteredBooks = 
+    props.recommend
+    ? books.filter((book) => book.genres.includes(recommendGenre))
+    :
+    (selectedGenre === 'all'
     ? books
-    : books.filter((book) => book.genres.includes(selectedGenre))
+    : books.filter((book) => book.genres.includes(selectedGenre)))
 
   return (
     <div>
-      <h2>books</h2>
-      <div>in genre: {selectedGenre}</div>
+      <h2>{props.recommend ? 'recommendations' : 'books'}</h2>
+      <div>in genre: {props.recommend ? recommendGenre : selectedGenre}</div>
 
       <table>
         <tbody>
@@ -41,16 +46,18 @@ const Books = (props) => {
           ))}
         </tbody>
       </table>
-      <div>
-        {genres.map((genre) => (
-          <button key={genre} onClick={() => setSelectedGenre(genre)} type="button">
-            {genre}
+      {!props.recommend && (
+        <div>
+          {genres.map((genre) => (
+            <button key={genre} onClick={() => setSelectedGenre(genre)} type="button">
+              {genre}
+            </button>
+          ))}
+          <button onClick={() => setSelectedGenre('all')} type="button">
+            all genres
           </button>
-        ))}
-        <button onClick={() => setSelectedGenre('all')} type="button">
-          all genres
-        </button>
-      </div>
+        </div>
+      )}
     </div>
   )
 }
